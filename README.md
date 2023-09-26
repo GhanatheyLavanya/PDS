@@ -5,3 +5,5 @@
 2. Use the student performance dataset provided in the link below to complete 5 data visualization assignments (make 5 unique             visualizations). Describe whatever type of analysis each visualization has made simpler. Make this question's folder structure resemble that of question 1. fifteen points.
 
 Data link: https://app.box.com/s/kissqeuoii1345re14a0rw3zohjhqd85
+
+Workflow: [workflow.docx](https://github.com/GhanatheyLavanya/PDS/files/12732462/workflow.docx)
