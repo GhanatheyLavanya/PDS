@@ -1,0 +1,12 @@
+# Load the used cars dataset
+df_cars <- read.csv('/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/raw_data_cars/raw_data_cars.csv')
+
+# Cleaning non-numeric values(i.e., Mileage has "kmpl", Engine has "cc", power has "bhp",New_price has "Lakh")  in the specified columns before imputing them with mean, meadin or mode
+df_cars$Mileage <- as.numeric(gsub("[^0-9.]", "", df_cars$Mileage))
+df_cars$Engine <- as.numeric(gsub("[^0-9.]", "", df_cars$Engine))
+df_cars$Power <- as.numeric(gsub("[^0-9.]", "", df_cars$Power))
+df_cars$New_Price <- as.numeric(gsub("[^0-9.]", "", df_cars$New_Price))
+
+#Print the summary of the data
+str(df_cars)
+

@@ -1,0 +1,18 @@
+#Install the required libraries
+install.packages("dplyr")
+library(dplyr)
+
+# Load the used cars dataset
+df_cars <- read.csv('/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/results_cars/c_results_cars_encoded.csv')
+
+# Creating a new feature using mutate feature in R dplyr library for the current age of the car
+df_cars <- df_cars %>% 
+  mutate(Current_Age = as.integer(format(Sys.Date(), "%Y")) - Year)
+
+# View the dataset with the new "Current_Age" feature added to our dataset
+head(df_cars)
+
+# Write the pre processed data to a new file
+write.csv(df_cars, file = "/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/results_cars/d_results_cars.csv", row.names = FALSE)
+
+

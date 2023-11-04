@@ -1,0 +1,15 @@
+# Load the necessary library
+library(dplyr)
+
+# Loading the cleaned dataset
+df_cars <- read.csv('/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/clean_data_cars/clean_data_cars.csv')
+
+# Performing  one-hot encoding within the same columns
+df_cars <- df_cars %>%
+  mutate(across(c(Fuel_Type, Transmission), ~ as.numeric(. == "Petrol" | . == "Manual")))
+
+# View the dataset with one-hot encoded values
+head(df_cars)
+
+# Writing the data with one-hot encoded values to a new file
+write.csv(df_cars, file = "/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/results_cars/c_results_cars_encoded.csv", row.names = FALSE)

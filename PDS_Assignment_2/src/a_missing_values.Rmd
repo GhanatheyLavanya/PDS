@@ -1,0 +1,58 @@
+# Load the used cars dataset
+df_cars <- read.csv('/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/raw_data_cars/raw_data_cars.csv')
+
+#summary of the dataset
+str(df_cars)
+
+# Checking for missing values in the entire dataset
+missing_values <- sapply(df_cars, function(x) sum(is.na(x)))
+
+# List the variables with numeric datatype that has missing values
+missing_vars_numeric <- names(df_cars)[which(missing_values > 0)]
+
+# Display the number of missing values for  columns with numeric datatype
+print(missing_values)
+
+# Identify and count missing values in columns that has character datatype
+missing_values_character <- colSums(sapply(df_cars[, sapply(df_cars, is.character)], function(x) x == ""))
+
+# Display the number of missing values in columns that has character datatype
+print(missing_values_character)
+
+# Cleaning non-numeric values(i.e., Mileage has "kmpl", Engine has "cc", power has "bhp",New_price has "Lakh")  in the specified columns before imputing them with mean, meadin or mode
+df_cars$Mileage <- as.numeric(gsub("[^0-9.]", "", df_cars$Mileage))
+df_cars$Engine <- as.numeric(gsub("[^0-9.]", "", df_cars$Engine))
+df_cars$Power <- as.numeric(gsub("[^0-9.]", "", df_cars$Power))
+df_cars$New_Price <- as.numeric(gsub("[^0-9.]", "", df_cars$New_Price))
+
+#Print the summary of the data
+str(df_cars)
+
+
+# To impute the missing values with mean, median, mode Load the necessary library
+library(dplyr)
+
+#Dropping the first column which is just a row number
+df_cars <- df_cars %>% select(-1)
+
+#Drop the "New_Price" column because it has more than 50% missing values
+df_cars <- df_cars %>% select(-New_Price)
+str(df_cars)
+
+# Impute missing values with the mean for numeric columns
+numeric_cols <- names(df_cars)[sapply(df_cars, is.numeric)]
+df_cars[numeric_cols] <- lapply(df_cars[numeric_cols], function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x))
+
+# Round all numeric values to two decimal places
+df_cars[numeric_cols] <- lapply(df_cars[numeric_cols], function(x) round(x, 2))
+
+# Impute missing values with the mode for character columns
+character_cols <- names(df_cars)[sapply(df_cars, is.character)]
+df_cars[character_cols] <- lapply(df_cars[character_cols], function(x) ifelse(x == "", names(sort(table(x), decreasing = TRUE)[1]), x))
+
+# Verify that missing values have been correctly imputed
+missing_values_handle <- sapply(df_cars, function(x) sum(is.na(x)))
+print(missing_values_handle)
+
+# Write the cleaned data to a new file
+write.csv(df_cars, file = "/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_2/clean_data_cars/clean_data_cars.csv", row.names = FALSE)
