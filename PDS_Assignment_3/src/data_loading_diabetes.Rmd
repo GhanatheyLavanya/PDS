@@ -1,4 +1,4 @@
-#Reading the diabetes csv file
+# Reading the diabetes csv file
 df_diabetes = read.csv("/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_3/data_raw/data_raw_diabetes.csv")
 str(df_diabetes)
 
