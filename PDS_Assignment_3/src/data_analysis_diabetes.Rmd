@@ -1,23 +1,23 @@
 #---------------------A)setting a seed value and working on a sample size of 25 -----------------------------------------------
-#set a seed (to ensure work reproducibility) 
+# set a seed (to ensure work reproducibility) 
 set.seed(777)
 
 # Take a random sample of 25 observations
 sample25 <- df_diabetes[sample(nrow(df_diabetes), 25, replace = FALSE), ]
 
-#printing the info of the Sample data
+# printing the info of the Sample data
 str(sample25)
 
-#Getting the info of sample data
+# Getting the info of sample data
 summary(sample25)
 
-#finding the mean of the samples and population
+# finding the mean of the samples and population
 population_mean_glucose <- mean(df_diabetes$Glucose)
 population_max_glucose <- max(df_diabetes$Glucose)
 sample25_mean_glucose <- mean(sample25$Glucose)
 sample25_max_glucose <- max(sample25$Glucose)
 
-#printing the values
+# printing the values
 sprintf("%f is the Population mean glucose", population_mean_glucose)
 sprintf("%f is the Population max glucose", population_max_glucose)
 sprintf("%f is the sample mean glucose", sample25_mean_glucose)
