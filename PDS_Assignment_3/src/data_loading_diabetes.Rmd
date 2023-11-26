@@ -1,0 +1,14 @@
+#Reading the diabetes csv file
+df_diabetes = read.csv("/Users/lavanyadhaipully/Desktop/PDS/PDS_Assignment_3/data_raw/data_raw_diabetes.csv")
+str(df_diabetes)
+
+#Getting the info of complete csv
+summary(df_diabetes)
+
+# Check for missing values in each column
+colSums(is.na(df_diabetes))
+
+# Count total missing values in the entire data frame
+sum(is.na(df_diabetes))
+
+

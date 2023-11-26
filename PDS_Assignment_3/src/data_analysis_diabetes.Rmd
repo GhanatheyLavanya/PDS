@@ -1,0 +1,118 @@
+#---------------------A)setting a seed value and working on a sample size of 25 -----------------------------------------------
+#set a seed (to ensure work reproducibility) 
+set.seed(777)
+
+# Take a random sample of 25 observations
+sample25 <- df_diabetes[sample(nrow(df_diabetes), 25, replace = FALSE), ]
+
+#printing the info of the Sample data
+str(sample25)
+
+#Getting the info of sample data
+summary(sample25)
+
+#finding the mean of the samples and population
+population_mean_glucose <- mean(df_diabetes$Glucose)
+population_max_glucose <- max(df_diabetes$Glucose)
+sample25_mean_glucose <- mean(sample25$Glucose)
+sample25_max_glucose <- max(sample25$Glucose)
+
+#printing the values
+sprintf("%f is the Population mean glucose", population_mean_glucose)
+sprintf("%f is the Population max glucose", population_max_glucose)
+sprintf("%f is the sample mean glucose", sample25_mean_glucose)
+sprintf("%f is the sample max glucose", sample25_max_glucose)
+
+# Load necessary libraries
+library(ggplot2)
+
+# Create a data frame for population and sample statistics
+stats_data <- data.frame(
+  Category = c("Population Mean", "Population Highest", "Sample Mean", "Sample Highest"),
+  Glucose = c(population_mean_glucose, population_max_glucose, sample25_mean_glucose, sample25_max_glucose),
+  Group = c("Population", "Population", "Sample", "Sample")
+)
+
+# Create a bar chart to compare statistics
+ggplot(stats_data, aes(x = Category, y = Glucose, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.5) +
+  geom_text(aes(label = round(Glucose, 2)), position = position_dodge(width = 0.5), vjust = -0.5) +
+  labs(title = "Comparison of Glucose Statistics: Population vs Sample(25)", y = "Glucose Value") +
+  scale_fill_manual(values = c("purple", "purple", "pink", "pink")) +
+  theme_minimal() +
+  theme(legend.position = "none")
+  
+  
+#---------------B) Calculating the 98th percentile of BMI for sample and population data---------------------------------------
+# Calculate the 98th percentile of BMI for the population
+population_98th_percentile <- quantile(df_diabetes$BMI, probs = 0.98, na.rm = TRUE)
+
+# Calculate the 98th percentile of BMI for the sample(25)
+sample25_98th_percentile <- quantile(sample25$BMI, probs = 0.98, na.rm = TRUE)
+
+population_98th_percentile
+sample25_98th_percentile
+
+# Create a combined data frame for population and sample data
+combined_data <- rbind(
+  transform(df_diabetes, Group = "Population"),
+  transform(sample25, Group = "Sample(25)")
+)
+
+# Create a faceted density plot with annotations for 98th percentile
+ggplot(combined_data, aes(x = BMI, fill = Group)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ Group) +
+  geom_vline(data = data.frame(Group = c("Population", "Sample(25)"), BMI = c(population_98th_percentile, sample25_98th_percentile)),
+            aes(xintercept = BMI), color = "red", linetype = "dashed") +
+  geom_text(data = data.frame(Group = c("Population", "Sample(25)"), BMI = c(population_98th_percentile, sample25_98th_percentile)),
+            aes(label = paste("98th Percentile:", round(BMI, 2)), y = 0.01), vjust = -0.5, color = "red", size = 2.4) +
+  labs(title = "BMI Distribution: Population vs Sample(25)", y = "Density") +
+  scale_fill_manual(values = c("blue", "red")) +
+  theme_minimal() +
+  theme(text = element_text(size = 9))
+  
+#-------------- C)Using Bootstrap creating 500 samples -----------------------------------------------------------------------
+
+# Calculate statistics of the population for BloodPressure
+mean_bp <- mean(df_diabetes$BloodPressure)
+sd_bp <- sd(df_diabetes$BloodPressure)
+percentile_bp <- quantile(df_diabetes$BloodPressure, c(0.25, 0.5, 0.75))
+
+# Create empty vectors to store bootstrap results
+bp_mean_boot <- rep(NA, 500)
+bp_sd_boot <- rep(NA, 500)
+bp_quant_boot <- matrix(NA, nrow = 3, ncol = 500)
+
+# Perform bootstrap
+for (i in 1:500) {
+  sample_i <- sample(df_diabetes$BloodPressure, size = 150, replace = TRUE)
+  bp_mean_boot[i] <- mean(sample_i)
+  bp_sd_boot[i] <- sd(sample_i)
+  bp_quant_boot[, i] <- quantile(sample_i, probs = c(0.25, 0.5, 0.75))
+}
+
+# Comparison between population and bootstrap statistics for BloodPressure
+par(mfrow = c(3, 2))
+
+# Histogram for Population
+hist(df_diabetes$BloodPressure, main = "Population", xlab = "BloodPressure", col = "lightblue")
+
+# Bootstrap Mean
+hist(bp_mean_boot, main = "Bootstrap Mean", xlab = "BloodPressure", col = "lightgreen")
+abline(v = mean_bp, col = "red")
+
+# Bootstrap Standard Deviation
+hist(bp_sd_boot, main = "Bootstrap SD", xlab = "BloodPressure", col = "lightpink")
+abline(v = sd_bp, col = "red")
+
+# Bootstrap Percentiles
+matplot(1:500, t(bp_quant_boot), type = "l", main = "Bootstrap Percentiles", xlab = "Sample",
+        ylab = "BloodPressure", col = c("blue", "green", "orange"), lty = 1, xlim = c(1, 500))
+for (i in 1:3) {
+  lines(1:500, bp_quant_boot[i, ], col = c("blue", "green", "orange")[i], lty = 1)
+}
+abline(h = percentile_bp, col = c("blue", "green", "orange"), lty = 2, lwd = 0.5)  # Plot population percentiles
+
+# Adding labels
+legend("topright", legend = c("25th", "50th", "75th", "Population"), col = c("blue", "green", "orange", "red"), lty = c(1, 1, 1, 2), title = "Percentiles", text.font = 1, cex = 0.8)
